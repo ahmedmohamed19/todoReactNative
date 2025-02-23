@@ -1,194 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, FlatList, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import Home from './Src/Home'
+import TodoDetails from './Src/TodoDetails'  // تأكد من أن الملف موجود
+import { KeyboardAvoidingView } from 'react-native-web'
+KeyboardAvoidingView
+const { Navigator, Screen } = createNativeStackNavigator()
 
-export default function App() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [todos, setTodos] = useState([]);
-  const [status, setStatus] = useState('All');
-
-  useEffect(() => {
-    const loadTodos = async () => {
-      const storedTodos = await AsyncStorage.getItem('todos');
-      if (storedTodos) {
-        setTodos(JSON.parse(storedTodos));
-      }
-    };
-    loadTodos();
-  }, []);
-
-  useEffect(() => {
-    const saveTodos = async () => {
-      await AsyncStorage.setItem('todos', JSON.stringify(todos));
-    };
-    saveTodos();
-  }, [todos]);
-
-  const addTodo = () => {
-    if (title.trim() === '' || description.trim() === '') {
-      alert('Please enter a title and description');
-      return;
-    }
-
-    const nextId = todos.length > 0 ? todos[todos.length - 1].id + 1 : 0;
-    const newTodo = { id: nextId, title, description, completed: false };
-
-    setTodos([...todos, newTodo]);
-    setTitle('');
-    setDescription('');
-  };
-
-  const toggleComplete = (id) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
-  };
-
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-
-  const filteredTodos = todos.filter(todo => status === 'All' ? true : status === 'Done' ? todo.completed : !todo.completed);
-  // const filteredTodos = todos.filter(todo => {
-  //   if (status === 'All') return true;
-  //   if (status === 'Done') return todo.completed;
-  //   if (status === 'In Progress') return !todo.completed;
-  // });
-
+const App = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={{ width: '100%', height: '100%' }}>
-        <ImageBackground source={require('./assets/tt.jpg')} style={styles.image} resizeMode="cover">
-          <Text style={styles.h1}>TODO List</Text>
-
-          <TextInput
-            style={[styles.input, styles.margin]}
-            onChangeText={setTitle}
-            value={title}
-            placeholder="Enter Todo Title"
-          />
-          <TextInput
-            style={[styles.input, styles.margin]}
-            onChangeText={setDescription}
-            value={description}
-            placeholder="Enter Todo Description"
-          />
-
-          <TouchableOpacity style={[styles.button, styles.margin]} onPress={addTodo}>
-            <Text style={styles.inputText}>ADD</Text>
-          </TouchableOpacity>
-
-          <View style={styles.flex}>
-            <TouchableOpacity style={[styles.button, status === 'All' && styles.activeButton]} onPress={() => setStatus('All')}>
-              <Text style={styles.inputText}>All</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, status === 'Done' && styles.activeButton]} onPress={() => setStatus('Done')}>
-              <Text style={styles.inputText}>Done</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, status === 'In Progress' && styles.activeButton]} onPress={() => setStatus('In Progress')}>
-              <Text style={styles.inputText}>In Progress</Text>
-            </TouchableOpacity>
-          </View>
-
-          <FlatList
-            data={filteredTodos}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={[styles.todoItem, item.completed && styles.completed]}>
-                <TouchableOpacity onPress={() => toggleComplete(item.id)} >
-                  <Text style={[styles.todoText, item.completed && styles.completedText]}>
-                    {item.title} - {item.description}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteTodo(item.id)}>
-                  <Text style={styles.deleteButton}>❌</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-
-          <StatusBar style="auto" />
-        </ImageBackground>
-      </View>
-    </SafeAreaView>
-  );
+    <NavigationContainer>
+      <Navigator>
+       
+          <Screen name="Home" component={Home} />
+          <Screen name="TodoDetails" component={TodoDetails} />
+        
+      </Navigator>
+    </NavigationContainer>
+  )
 }
 
-const styles = StyleSheet.create({
-  h1: {
-    textAlign: 'center',
-    fontSize: 50,
-    fontWeight: '900',
-    color: 'white',
-    paddingVertical: 20,
-  },
-  container: {
-    backgroundColor: '#fff',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    justifyContent: 'center',
-  },
-  margin: {
-    margin: 12,
-  },
-  input: {
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: 'white',
-    padding: 10,
-    backgroundColor: 'white',
-    fontSize: 20,
-  },
-  button: {
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: 'white',
-    alignItems: 'center',
-  },
-  activeButton: {
-    backgroundColor: '#007BFF',
-    borderColor: '#0056b3',
-  },
-  inputText: {
-    color: 'white',
-    fontSize: 20,
-  },
-  todoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 8,
-  },
-  todoText: {
-    fontSize: 18,
-    color: 'white',
-  },
-  completed: {
-    backgroundColor: 'rgba(0, 255, 0, 0.3)',
-  },
-  completedText: {
-    textDecorationLine: 'line-through',
-    color: '#aaa',
-  },
-  deleteButton: {
-    fontSize: 18,
-    color: 'red',
-  },
-  flex: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 10,
-    marginVertical: 10,
-  },
-});
+export default App
