@@ -90,7 +90,6 @@ export default function Home() {
             <View style={{ width: '100%', height: '100%' }}>
                 <ImageBackground source={require('../assets/tt.jpg')} style={styles.image} resizeMode="cover">
                     <Text style={styles.h1}>TODO List</Text>
-
                     <TextInput
                         style={[styles.input, styles.margin]}
                         onChangeText={setTitle}
@@ -237,5 +236,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
+    },
+    inProgress: {
+        backgroundColor: 'rgba(255, 165, 0, 0.3)', // Light Orange
+    },
+    inProgressText: {
+        color: 'orange',
+        fontWeight: 'bold',
     },
 });
