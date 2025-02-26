@@ -61,8 +61,6 @@ export default function Home() {
         setEditingId(id)
         setAddUpdateBtn('update')
         const updateTodo = todos.filter(todo => todo.id === id)
-        console.log(updateTodo);
-
         const { title, description } = updateTodo[0]
         setTitle(title);
         setDescription(description);
@@ -88,7 +86,7 @@ export default function Home() {
         <SafeAreaView style={styles.container}>
 
             <View style={{ width: '100%', height: '100%' }}>
-                <ImageBackground source={require('../assets/tt.jpg')} style={styles.image} resizeMode="cover">
+                <ImageBackground source={require('../assets/backgroundImage.jpg')} style={styles.image} resizeMode="cover">
                     <Text style={styles.h1}>TODO List</Text>
                     <TextInput
                         style={[styles.input, styles.margin]}
@@ -236,12 +234,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
-    },
-    inProgress: {
-        backgroundColor: 'rgba(255, 165, 0, 0.3)', // Light Orange
-    },
-    inProgressText: {
-        color: 'orange',
-        fontWeight: 'bold',
-    },
+    }
 });
